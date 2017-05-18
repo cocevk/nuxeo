@@ -50,6 +50,7 @@ import org.nuxeo.ecm.directory.BaseDirectoryDescriptor;
 import org.nuxeo.ecm.directory.Directory;
 import org.nuxeo.ecm.directory.DirectoryCSVLoader;
 import org.nuxeo.ecm.directory.DirectoryException;
+import org.nuxeo.ecm.directory.Session;
 
 @XObject(value = "tableReference")
 public class TableReference extends AbstractReference implements Cloneable {
@@ -144,12 +145,15 @@ public class TableReference extends AbstractReference implements Cloneable {
         }
     }
 
-    public void addLinks(String sourceId, List<String> targetIds, SQLSession session) throws DirectoryException {
+    @Override
+    public void addLinks(String sourceId, List<String> targetIds, Session session) throws DirectoryException {
+        SQLSession sqlSession = (SQLSession) session;
+        maybeInitialize(sqlSession);
         if (targetIds == null) {
             return;
         }
         for (String targetId : targetIds) {
-            addLink(sourceId, targetId, session, true);
+            addLink(sourceId, targetId, sqlSession, true);
         }
     }
 
@@ -321,14 +325,18 @@ public class TableReference extends AbstractReference implements Cloneable {
         }
     }
 
-    public void removeLinksForSource(String sourceId, SQLSession session) throws DirectoryException {
-        maybeInitialize(session);
-        removeLinksFor(sourceColumn, sourceId, session);
+    @Override
+    public void removeLinksForSource(String sourceId, Session session) throws DirectoryException {
+        SQLSession sqlSession = (SQLSession) session;
+        maybeInitialize(sqlSession);
+        removeLinksFor(sourceColumn, sourceId, sqlSession);
     }
 
-    public void removeLinksForTarget(String targetId, SQLSession session) throws DirectoryException {
-        maybeInitialize(session);
-        removeLinksFor(targetColumn, targetId, session);
+    @Override
+    public void removeLinksForTarget(String targetId, Session session) throws DirectoryException {
+        SQLSession sqlSession = (SQLSession) session;
+        maybeInitialize(sqlSession);
+        removeLinksFor(targetColumn, targetId, sqlSession);
     }
 
     @Override
@@ -453,10 +461,26 @@ public class TableReference extends AbstractReference implements Cloneable {
     }
 
     @Override
+    public void setSourceIdsForTarget(String targetId, List<String> sourceIds, Session session)
+            throws DirectoryException {
+        SQLSession sqlSession = (SQLSession) session;
+        maybeInitialize(sqlSession);
+        setSourceIdsForTarget(targetId, sourceIds, sqlSession);
+    }
+
+    @Override
     public void setTargetIdsForSource(String sourceId, List<String> targetIds) throws DirectoryException {
         try (SQLSession session = getSQLSession()) {
             setTargetIdsForSource(sourceId, targetIds, session);
         }
+    }
+
+    @Override
+    public void setTargetIdsForSource(String sourceId, List<String> targetIds, Session session)
+            throws DirectoryException {
+        SQLSession sqlSession = (SQLSession) session;
+        maybeInitialize(sqlSession);
+        setTargetIdsForSource(sourceId, targetIds, sqlSession);
     }
 
     // TODO add support for the ListDiff type

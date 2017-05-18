@@ -43,6 +43,10 @@ public interface Reference {
 
     Directory getTargetDirectory() throws DirectoryException;
 
+    /**
+     * @deprecated since 9.2
+     */
+    @Deprecated
     void setTargetDirectoryName(String targetDirectoryName);
 
     void addLinks(String sourceId, List<String> targetIds) throws DirectoryException;
@@ -67,4 +71,51 @@ public interface Reference {
      * @since 5.6
      */
     Reference clone();
+
+    /**
+     * Adds the links between the source id and the target ids
+     *
+     * @param sourceId the source id
+     * @param targetIds the target ids
+     * @param session the session
+     * @throws DirectoryException
+     * @since 9.2
+     */
+    void addLinks(String sourceId, List<String> targetIds, Session session) throws DirectoryException;
+
+    /**
+     * @since 9.2
+     */
+    void setSourceIdsForTarget(String targetId, List<String> sourceIds, Session session) throws DirectoryException;
+
+    /**
+     * Sets all target ids to be associated to the given source id
+     *
+     * @param sourceId the source id
+     * @param targetIds the target ids
+     * @param session the session
+     * @since 9.2
+     */
+    void setTargetIdsForSource(String sourceId, List<String> targetIds, Session session) throws DirectoryException;
+
+    /**
+     * Removes all the links for a given target id
+     *
+     * @param targetId the target id
+     * @param session the session
+     * @since 9.2
+     */
+    void removeLinksForTarget(String targetId, Session session) throws DirectoryException;
+
+    /**
+     * Removes all the links for a given source id
+     *
+     * @param sourceId the source id
+     * @param session the session
+     * @since 9.2
+     */
+    void removeLinksForSource(String sourceId, Session session) throws DirectoryException;
+
+
+
 }
